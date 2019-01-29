@@ -1,0 +1,445 @@
+<!DOCTYPE HTML>
+<!--
+	Arcana by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+<head>
+<title>Jurassic World Alive Database</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		
+	<!--===============================================================================================-->	
+		<link rel="icon" type="image/png" href="table_css/images/icons/favicon.ico"/>
+	<!--===============================================================================================-->
+		<link rel="stylesheet" type="text/css" href="table_css/vendor/bootstrap/css/bootstrap.min.css">
+	<!--===============================================================================================-->
+		<link rel="stylesheet" type="text/css" href="table_css/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<!--===============================================================================================-->
+		<link rel="stylesheet" type="text/css" href="table_css/vendor/animate/animate.css">
+	<!--===============================================================================================-->
+		<link rel="stylesheet" type="text/css" href="table_css/vendor/select2/select2.min.css">
+	<!--===============================================================================================-->
+		<link rel="stylesheet" type="text/css" href="table_css/vendor/perfect-scrollbar/perfect-scrollbar.css">
+	<!--===============================================================================================-->
+		<link rel="stylesheet" type="text/css" href="table_css/css/util.css">
+		<link rel="stylesheet" type="text/css" href="table_css/css/main.css">
+	<!--===============================================================================================-->
+		<link rel="stylesheet" type="text/css" href="popup_css/css/main.css">
+<script type="text/javascript">
+var DNAList 		= new Array(100,150,200,250,300,350,400,500,750,1000,1250,1500,2000,2500,3000,3500,4000,5000,7500,10000,12500,15000,20000,25000,30000,35000,40000,50000,75000);
+var coinList		= new Array(5,10,25,50,100,200,400,600,800,1000,2000,4000,6000,8000,10000,15000,20000,30000,40000,50000,60000,70000,80000,90000,100000,120000,150000,200000,250000);
+var INIT_COMM = 1;
+var INIT_RARE =	6;
+var INIT_EPIC = 11;
+var INIT_LENG = 16;
+var INIT_UNIQ = 21;
+
+
+window.onload = init;
+
+//////////////////////data///////////////////////////////
+function init(){
+	//alert(DNAList[INIT_EPIC])
+	initTable();
+	initSelector();
+}
+
+//////////////////////Utils////////////////////
+function getObj(src){
+	return document.getElementById(src);
+}
+
+function removeOptionsAll(obj){
+	for(var i=obj.options.length-1; i>=0; i--){
+		obj.remove(i);
+	}
+}
+
+function reflashOptions(src, tier){
+	var selObj = getObj(src);
+	
+	removeOptionsAll(selObj);
+
+	var curOp = document.createElement("option");
+	curOp.text = "-------------";
+	curOp.value = "";
+	selObj.add(curOp);
+	
+	for(var i=parseInt(tier); i<=30; i++){
+		var option = document.createElement("option");
+		option.text = i;
+		option.value = i;
+		selObj.add(option);
+	}
+}
+//////////////////////Advanced Functions/////////////////
+function initTable(){
+	var tbody = getObj("calcTable");
+	var innerHTML = "";
+	for(var i=0; i<=29; i++){
+		var level = i + 1;
+		innerHTML += '<tr class="row100 body">';
+		innerHTML += '<th class="cell100 columnLv">' + level +'</th>';								//level						
+		if(i>=INIT_COMM){
+			innerHTML += '<th class="cell100 columnComm">' + DNAList[i-INIT_COMM] +'</th>';			//common DNA
+		}else{
+			innerHTML += '<th class="cell100 columnComm"></th>';
+		}
+		if(i>=INIT_RARE){
+			innerHTML += '<th class="cell100 columnRare">' + DNAList[i-INIT_RARE] +'</th>';			//rare DNA
+		}else{
+			innerHTML += '<th class="cell100 columnRare"></th>';
+		}
+		if(i>=INIT_EPIC){
+			innerHTML += '<th class="cell100 columnEpic">' + DNAList[i-INIT_EPIC] +'</th>';			//rare DNA
+		}else{
+			innerHTML += '<th class="cell100 columnEpic"></th>';
+		}
+		if(i>=INIT_LENG){
+			innerHTML += '<th class="cell100 columnLegn">' + DNAList[i-INIT_LENG] +'</th>';			//rare DNA
+		}else{
+			innerHTML += '<th class="cell100 columnLegn"></th>';
+		}
+		if(i>=INIT_UNIQ){
+			innerHTML += '<th class="cell100 columnUniq">' + DNAList[i-INIT_UNIQ] +'</th>';			//rare DNA
+		}else{
+			innerHTML += '<th class="cell100 columnUniq"></th>';
+		}
+		if(i>=INIT_COMM){
+			innerHTML += '<th class="cell100 columnCoin">' + coinList[i-INIT_COMM] +'</th>';			//common DNA
+		}else{
+			innerHTML += '<th class="cell100 columnCoin"></th>';
+		}
+		innerHTML += '</tr>';
+	}
+	tbody.innerHTML = innerHTML;
+}
+
+function initSelector(){
+	var curLv = getObj("selCurLv");
+	var tarLv = getObj("selTarLv");	
+	
+	removeOptionsAll(tarLv);
+	var tarOp = document.createElement("option");
+	tarOp.text = "-------------";
+	tarLv.add(tarOp);
+	
+	for(var i=0; i<=30; i++){
+		var text = "";
+		var value = "";
+		if(i==0){
+			text = "-------------"
+			value = "";
+		}else{
+			text = i;
+			value = i;
+		}
+		
+		var option = document.createElement("option");
+		option.text = text;
+		option.value = value;
+		curLv.add(option);
+	}
+}
+
+function syncLevel(tier){
+	reflashOptions("selCurLv", tier);
+	reflashOptions("selTarLv", tier);
+}
+
+function syncTarget(tier){
+	reflashOptions("selTarLv", tier);
+}
+
+function calc(){
+	var tier = getObj("selTier").value;
+	var cur = getObj("selCurLv").value;
+	var tar = getObj("selTarLv").value;
+	
+	if(cur=="" || tar==""){
+		alert("Please select level!");
+	}else{
+		var dna = 0;
+		var coins = 0;
+		
+		for(var i=cur-tier; i<tar-tier; i++){
+			dna += parseInt(DNAList[i]);
+		}
+		for(var i=parseInt(cur); i<parseInt(tar); i++){
+			//alert("coins:" + coins + "; lv:" + (i+1).toString() + "; curCoin:" + coinList[i-1])
+			coins += parseInt(coinList[i-1]);
+		}
+		
+		getObj("totalDNA").value = dna;
+		getObj("totalCoins").value = coins;
+	}
+}
+///////////////////// Object //////////////////////////////
+function levelObj(level, DNA, coins){
+	this.level = level;
+	this.DNA = DNA;
+	this.coins = coins;
+}
+		
+</script>
+</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+			
+
+			<!-- Header -->
+				<div id="header">
+
+					<!-- Logo -->
+						<h1><a href="index.html" id="logo">Jurassic World Alive - Personal Database</a></h1>
+					<!-- Nav -->
+						<nav id="nav">
+							<ul>
+								<li><a href="index.html">Home</a></li>
+								<li class="current">
+									<a href="#">Tools</a>
+									<ul>
+										<li><a href="LvUpCalc.html">Level Up Calculator</a></li><!--
+										<li><a href="product_coming.html">Coming soon</a></li>
+										<li><a href="product_off.html">Off Market</a></li>-->
+									</ul>
+								</li>
+								<li>
+									<a href="#">Links</a>
+									<ul>
+										<li><a href="https://www.facebook.com/JurassicWorldAlive/">Facebook</a></li>
+										<li><a href="https://metahub.info/tag/jurassic-world-alive-news/">News - Metahub</a></li>
+									</ul>
+							</ul>							
+						</nav>						
+				</div>
+
+			<!-- Banner -->
+				<section id="banner">
+					<header>
+						<!--<h2><em>If you already have account <a href="#" class="button">Login</a> No?<a href="http://html5up.net">Sign up</a></em></h2>-->
+					</header>
+				</section>
+
+			<!-- Gigantic Heading -->
+				<section class="wrapper style2">
+					<div class="container">
+						<header class="major">
+							<h2>Level Up Calculator</h2>
+							<!--<p>With a much smaller subtitle hanging out just below it</p>-->
+						</header>
+					</div>
+				</section>
+
+			<!-- Posts -->
+				<section class="wrapper style1">
+					<div class="container">
+						<div class="row">
+							<section class="col-8 col-12-narrower">
+								<div class="inner">
+									
+									
+									<div class="table100 ver1 m-b-110">
+										<div class="table100-head">
+											<table>
+												<thead>
+													<tr class="row100 head">
+														<th class="cell100 columnLv">Level</th>
+														<th class="cell100 columnComm">Common</th>
+														<th class="cell100 columnRare">Rare</th>
+														<th class="cell100 columnEpic">Epic</th>
+														<th class="cell100 columnLegn">Legend</th>
+														<th class="cell100 columnUniq">Unique</th>
+														<th class="cell100 columnCoin">Coins</th>
+													</tr>
+												</thead>
+											</table>
+										</div>
+
+										<div class="table100-body js-pscroll">
+											<table>
+												<tbody id="calcTable"><!--
+													<tr class="row100 body">
+														<th class="cell100 column1"><input id="com2" size="5" readonly></th>
+														<th class="cell100 column1"><input id="com2" size="5" readonly></th>
+														<th class="cell100 column1"><input id="com2" size="5" readonly></th>
+														<th class="cell100 column1"><input id="com2" size="5" readonly></th>
+														<th class="cell100 column1"><input id="com2" size="5" readonly></th>
+													</tr>-->
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</section>
+							<section class="col-4 col-12-narrower">
+								<div class="inner">
+									<div class="table100 ver4 m-b-110">
+										<div class="table100-body js-pscroll">
+											<table>
+												<tbody>
+													<tr class="row100 body">
+														<th class="cell100 column2">Tier</th>
+														<th class="cell100 column1">
+															<select id="selTier" onchange="syncLevel(this.value);">
+																<option value=1 style="background-color:grey; color:white;">Common</option>
+																<option value=6 style="background-color:#3366cc; color:white;">Rare</option>
+																<option value=11 style="background-color:#cccc00; color:white;">Epic</option>
+																<option value=16 style="background-color:#99004d; color:white;">Legendary</option>
+																<option value=21 style="background-color:#29a329; color:white;">Unique</option>
+															</select>
+														</th>
+													</tr>
+													<tr class="row100 body">
+														<th class="cell100 column2">Current Level</th>
+														<th class="cell100 column1">
+															<select id="selCurLv" onchange="syncTarget(this.value);"></select>
+														</th>
+													</tr>
+													<tr class="row100 body">
+														<th class="cell100 column2">Target Level</th>
+														<th class="cell100 column1">
+															<select id="selTarLv"><option>-------------<option><select>
+														</th>
+													</tr>
+												</tbody>
+											</table>
+											<table>
+												<tbody>
+													<tr class="row100 body">
+														<th class="cell100 column1">Total DNA</th>
+														<th class="cell100 column1">
+															<input id="totalDNA" readonly>
+														</th>
+													</tr>
+													<tr class="row100 body">
+														<th class="cell100 column1">Total Coins</th>
+														<th class="cell100 column1">
+															<input id="totalCoins" readonly>
+														</th>
+													</tr>
+													<tr class="row100 body">
+														<th class="cell100 column1"></th>
+														<th class="cell100 column1"></th>
+													</tr>
+													<tr class="row100 body">
+														<th class="cell100 column1"><button class="button small" onclick="calc();">Calc</button></th>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</section>							
+						</div>
+						
+						<!--<div class="row">
+							<section class="col-6 col-12-narrower">
+								<div class="box post">
+									<a href="#" class="image left"><img src="images/pj3.jpg" alt="" /></a>
+									<div class="inner">
+										<h3>Z Apartment</h3>
+										<p>
+											Value-add project<br>
+											8% Return<br>
+											5 Years	
+										</p>
+									</div>
+								</div>
+							</section>
+							<section class="col-6 col-12-narrower">
+								<div class="box post">
+									<a href="#" class="image left"><img src="images/pj4.jpg" alt="" /></a>
+									<div class="inner">
+										<h3>A Apartment</h3>
+										<p>
+											Value-add project<br>
+											8% Return<br>
+											5 Years	
+										</p>
+									</div>
+								</div>
+							</section>
+						</div>-->
+					</div>
+				</section>
+
+			<!-- CTA 
+				<section id="cta" class="wrapper style3">
+					<div class="container">
+						<header>
+							<h2>Are you ready to continue your quest?</h2>
+							<a href="#" class="button">Insert Coin</a>
+						</header>
+					</div>
+				</section>-->
+
+			<!-- Footer -->
+				<div id="footer">
+					<div class="container">
+						<div class="row">
+							<section class="col-6">
+								<h3>Links to Stuff</h3>
+								<ul class="links">
+									<li><a href="#">Pro Company</a></li>
+									<li><a href="#">Co-operation</a></li>
+									<li><a href="#">------------</a></li>
+								</ul>
+							</section>
+							<section class="col-6 col-12-narrower">
+								<h3>Get In Touch</h3>
+								<form>
+									<div class="row gtr-50">
+										<div class="col-6 col-12-mobilep">
+											<input type="text" name="name" id="name" placeholder="Name" />
+										</div>
+										<div class="col-6 col-12-mobilep">
+											<input type="email" name="email" id="email" placeholder="Email" />
+										</div>
+										<div class="col-12">
+											<textarea name="message" id="message" placeholder="Message" rows="5"></textarea>
+										</div>
+										<div class="col-12">
+											<ul class="actions">
+												<li><input type="submit" class="button alt" value="Send Message" /></li>
+											</ul>
+										</div>
+									</div>
+								</form>
+							</section>
+						</div>
+					</div>
+
+					<!-- Icons -->
+						<ul class="icons">
+							<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+							<li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+							<li><a href="#" class="icon fa-github"><span class="label">GitHub</span></a></li>
+							<li><a href="#" class="icon fa-linkedin"><span class="label">LinkedIn</span></a></li>
+							<li><a href="#" class="icon fa-google-plus"><span class="label">Google+</span></a></li>
+						</ul>
+
+					<!-- Copyright -->
+						<div class="copyright">
+							<ul class="menu">
+								<li>&copy; Untitled. All rights reserved</li><li>Pro Investment</li>
+							</ul>
+						</div>
+
+				</div>
+
+		</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.dropotron.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
